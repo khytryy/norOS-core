@@ -13,4 +13,4 @@ typedef struct {
   uint8_t fb_bpp;
   uint8_t fb_type;
   uint8_t reserved[6];
-} framebuffer;
+} framebuffer_t;
