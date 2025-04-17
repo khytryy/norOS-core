@@ -1,3 +1,5 @@
-/build/
+/build/*.o
 /dist/
+/dist/x86_64/kernel.iso
 /distro/
+/distro/output/kernel.bin
