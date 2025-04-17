@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "../../multiboot2/mb2.h"
 
-typedef struct framebuffer __attribute__((packed)) {
+typedef struct {
   uint32_t type;
   uint32_t size;
   uint64_t fb_addr;
@@ -13,4 +13,4 @@ typedef struct framebuffer __attribute__((packed)) {
   uint8_t fb_bpp;
   uint8_t fb_type;
   uint8_t reserved[6];
-};
+} framebuffer;
