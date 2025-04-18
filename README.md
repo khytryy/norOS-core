@@ -1,1 +1,2 @@
-# norOS - simple for fun kernel
+# norOS core - A x64 kernel made from scratch
+
