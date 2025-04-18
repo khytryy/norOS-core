@@ -29,17 +29,17 @@ build/asm/%.o: source/asm/%.asm
 .PHONY: kernel
 kernel: $(object)
 	rm -rf serial.log
-	mkdir -p dist/x86_64 disto/output targets/x86_64/iso/boot/grub
-	x86_64-elf-ld -n -o disto/output/kernel.bin -T targets/x86_64/linker.ld $(object)
-	cp disto/output/kernel.bin targets/x86_64/iso/boot/kernel.bin
-	grub-mkrescue -o dist/x86_64/kernel.iso targets/x86_64/iso
-	qemu-system-x86_64 -cdrom dist/x86_64/kernel.iso -serial file:serial.log
+	mkdir -p bin/x86_64 bin/output targets/x86_64/iso/boot/grub
+	x86_64-elf-ld -n -o bin/output/kernel.bin -T targets/x86_64/linker.ld $(object)
+	cp bin/output/kernel.bin targets/x86_64/iso/boot/kernel.bin
+	grub-mkrescue -o bin/x86_64/kernel.iso targets/x86_64/iso
+	qemu-system-x86_64 -cdrom bin/x86_64/kernel.iso -serial file:serial.log
 
 .PHONY: clean
 clean:
 	rm -rf build/*
 	rm -rf dist/*
-	rm -rf disto/*
+	rm -rf bin/*
 	rm -rf targets/x86_64/iso/boot/kernel.bin
 	rm -rf targets/x86_64/iso/boot/grub
 	rm -f serial.log
