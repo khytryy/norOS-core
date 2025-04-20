@@ -1,0 +1,16 @@
+norOS-core changelog
+
+version 41925:
+    - Added multiboot2.h
+    - Added 8259 PIC support
+    - Switched to C code
+
+        notes:
+            Changed makefile so that you can just run "make" instead of "make kernel"
+
+        work in progress:
+            - GDT
+            - Interrupts
+            - Interrupt handler
+            - Error handler
+            - Keyboard handler

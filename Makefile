@@ -9,10 +9,16 @@ asmobjects := $(patsubst source/asm/%.asm, build/asm/%.o, $(asmssource))
 
 object := $(libheaderobject) $(asmobjects) $(kernelobject)
 
-.PHONY: all
-all: kernel
-
 $(shell mkdir -p build/c/kernel build/asm build/c/lib)
+
+.PHONY: all
+all: checkos kernel
+
+.PHONY: checkos
+checkos:
+ifeq ($(OS),Windows_NT)
+	@echo "[ !!! ] You're currently using a Windows machine. Its recommended to spin up a Linux VM" >&2
+endif
 
 build/c/kernel/%.o: source/c/kernel/%.c
 	mkdir -p $(dir $@)
@@ -34,6 +40,7 @@ kernel: $(object)
 	cp bin/output/kernel.bin targets/x86_64/iso/boot/kernel.bin
 	grub-mkrescue -o bin/x86_64/kernel.iso targets/x86_64/iso
 	qemu-system-x86_64 -cdrom bin/x86_64/kernel.iso -serial file:serial.log
+	cat serial.log
 
 .PHONY: clean
 clean:
