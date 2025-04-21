@@ -1,2 +1,9 @@
-[ SUCCESS ] magic matches
-[ SUCCESS ] pic remapped
+[ i ] booted by multiboot2
+[ i ] interrupt controller remapped
+[ *** ] booting the kernel...
+
+[ SUCCESS ] job done
+norOS kernel [Version 42125]
+Welcome to norOS!
+
+Running on: AuthenticAMD

@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "io.h": "c",
-        "serial.h": "c"
+        "serial.h": "c",
+        "vendor.h": "c"
     }
 }

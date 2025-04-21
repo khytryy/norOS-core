@@ -1,13 +1,14 @@
-bits 64
+section .text
+global load_gdt
+extern gDescriptorGDT
 
-global i686GDTload
-i686GDTload:
-    push rbp
-    mov rbp, rsp
+load_gdt:
+    lgdt [gDescriptorGDT]
 
-    mov rax, [rbp + 8]     ; descriptor pointer (64-bit)
-    lgdt [rax]             ; load GDT
+    mov rax, .reload_cs
+    push 0x08
+    push rax
+    retfq
 
-    mov rsp, rbp
-    pop rbp
+.reload_cs:
     ret

@@ -1,24 +1,4 @@
-/*
-    gdt 41925 by Yehor Khytryy
-    created for norOS-core project
-*/
-
 #include "gdt.h"
-
-typedef struct {
-    uint16_t limitLow;               // limit (bits 0-15)
-    uint16_t baseLow;                // base (bits 0-15)
-    uint8_t baseMiddle;              // base (bits 16-23)
-    uint8_t access;                  // access
-    uint8_t flagsLimitHigh;          // limit (bits 16-19)
-    uint8_t baseHigh;                // base (bits 24-31)
-} __attribute__((packed)) entryGDT;
-
-typedef struct {
-    uint16_t limit;                  // sizeof(gdt) -1
-    entryGDT* address;               // address
-
-} __attribute__((packed)) descriptorGDT;
 
 typedef enum {
     gdtAccessCodeReadable            = 0x02,
@@ -31,7 +11,7 @@ typedef enum {
     gdtAccessDataSegment             = 0x10,
     gdtAccessCodeSegment             = 0x18,
 
-    gdtAccessDescriptorTSS           = 0x00,
+    gdtAccessDescriptorTSS           = 0x09,
 
     gdtAccessRing0                   = 0x00,
     gdtAccessRing1                   = 0x20,
@@ -53,9 +33,8 @@ typedef enum {
 #define gdtLimitLow(limit)                  (limit & 0xFFFF)
 #define gdtBaseLow(base)                    (base & 0xFFFF)
 #define gdtBaseMiddle(base)                 ((base >> 16) & 0xFF)
-#define gdtFlagsLimitHigh(limit, flags)     (((limit >> 16) & 0xF) | (flags & 0xF0))
+#define gdtFlagsLimitHigh(limit, flags)     (((limit >> 16) & 0x0F) | (flags & 0xF0))
 #define gdtBaseHigh(base)                   ((base >> 24) & 0xFF)
-
 
 #define entryGDT(base, limit, access, flags) { \
     gdtLimitLow(limit),                     \
@@ -66,22 +45,23 @@ typedef enum {
     gdtBaseHigh(base),                      \
 }
 
+// GDT Table
 entryGDT gGDT[] = {
+    entryGDT(0, 0, 0, 0),  // Null descriptor
 
-    // null descriptor
-    entryGDT(0, 0, 0, 0),
-
-    // kernel 64-bit code segment
-    entryGDT(0, 0xFFFFF, 
+    // Kernel 64-bit code segment (index = 1)
+    entryGDT(0, 0x000FFFFF, 
         gdtAccessPresent | gdtAccessRing0 | gdtAccessCodeSegment | gdtAccessCodeReadable, 
         gdtFlag64 | gdtFlagGranularity4K),
 
-    entryGDT(0, 0xFFFFF, 
+    // Kernel 64-bit data segment (index = 2)
+    entryGDT(0, 0x000FFFFF, 
         gdtAccessPresent | gdtAccessRing0 | gdtAccessDataSegment | gdtAccessDataWriteable, 
         gdtFlag64 | gdtFlagGranularity4K),
-
 };
 
-descriptorGDT gDescriptorGDT = { sizeof(gGDT) - 1, gGDT};
-
-void i686GDTload(descriptorGDT* descriptor, uint16_t codeSegment, uint16_t dataSegment);
+// GDT Descriptor
+descriptorGDT gDescriptorGDT = {
+    .limit = sizeof(gGDT) - 1,
+    .address = (uint64_t)&gGDT
+};

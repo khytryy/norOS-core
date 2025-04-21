@@ -1,8 +1,6 @@
 #pragma once
 
 #define COM1 0x3f8
-#define ICON_SUCCESS "[ SUCCESS ]"
-#define ICON_FAILURE "[ FAILED ]"
 
 #include "../../io.h"
 #include <stdint.h>
