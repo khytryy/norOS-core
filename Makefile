@@ -48,5 +48,4 @@ clean:
 	rm -rf dist/*
 	rm -rf bin/*
 	rm -rf targets/x86_64/iso/boot/kernel.bin
-	rm -rf targets/x86_64/iso/boot/grub
 	rm -f serial.log

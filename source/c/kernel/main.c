@@ -1,11 +1,11 @@
 #include <stdint.h>
-#include "../lib/multiboot2/mb2.h"
 #include "../lib/drivers/serial/serial.h"
 #include "../lib/io.h"
 #include "../lib/intr/pic.h"
 #include "../lib/gdt/gdt.h"
 #include "../lib/icons.h"
 #include "../lib/drivers/cpuvendor/vendor.h"
+#include "../lib/drivers/fb/fb.h"
 
 void kernmain(uint32_t magic, void *addr) {
     if (magic == 0x36d76289) {
@@ -23,11 +23,10 @@ void kernmain(uint32_t magic, void *addr) {
     serialWrite(KERNEL_JOB);
     serialWrite("starting up...\n");
     serialWrite("\n");
-    
-    // do some cool stuff here
-
-    serialBegin();
-    
+    serialBegin(); // serial initialization
+    fbInit(addr); // framebuffer driver initialization
+    serialWrite(KERNEL_ICON_OK);
+    serialWrite("fb :: started up successfully\n");
 
 
     serialWrite(KERNEL_ICON_SUCCESS);
@@ -39,6 +38,16 @@ void kernmain(uint32_t magic, void *addr) {
     serialWrite("Running on: ");
     serialWrite(getmodel());
     serialWrite("\n");
+
+    char fbaddress[32];
+    // itoa((unsigned long)framebuffer_t.address, fbaddress, 16); /* FIX ME! */
+    serialWrite(KERNEL_ICON_INFO);
+    serialWrite("fb :: address: 0x");
+    serialWrite(fbaddress);
+    serialWrite("\n");
+
+
+    putpixel(0, 0, 0xFFFFFF);
 
 
 }

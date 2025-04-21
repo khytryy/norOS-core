@@ -1,7 +1,8 @@
 [ i ] booted by multiboot2
 [ i ] interrupt controller remapped
-[ *** ] booting the kernel...
+[ *** ] starting up...
 
+[ OK ] fb :: started up successfully
 [ SUCCESS ] job done
 norOS kernel [Version 42125]
 Welcome to norOS!
