@@ -22,7 +22,7 @@ endif
 
 build/c/kernel/%.o: source/c/kernel/%.c
 	mkdir -p $(dir $@)
-	x86_64-elf-gcc -c -I source/lib -ffreestanding -nostdlib $< -o $@
+	x86_64-elf-gcc -Werror -c -I source/lib -ffreestanding -nostdlib $< -o $@
 
 build/c/lib/%.o: source/c/lib/%.c
 	mkdir -p $(dir $@)

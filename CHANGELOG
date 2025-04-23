@@ -14,3 +14,12 @@ version 41925:
             - Interrupt handler
             - Error handler
             - Keyboard handler
+version 42225:
+    - Added cpuvendor detector
+    - Started working on the framebuffer
+    - Finished GDT
+
+        notes:
+            if you want to plot a pixel on a framebuffer, it will triple fault. problably because of bad memory
+        work in progress:
+            - Framebuffer

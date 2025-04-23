@@ -1,4 +1,6 @@
 #include "fb.h"
+#include "../serial/serial.h"
+#include "../../icons.h"
 
 framebuffer_t fb_inf;
 
@@ -67,6 +69,26 @@ void putpixel(int x, int y, uint32_t color) {
         }
         default:
             // Unsupported format
+            serialWrite(KERNEL_ICON_FAILURE);
+            serialWrite("fb :: not supported");
             break;
     }
+    char* itoa_hex(uintptr_t value, char* str) {
+        static const char hex_chars[] = "0123456789ABCDEF";
+        char* ptr = str;
+        int shift = (sizeof(uintptr_t) * 8) - 4;
+        int started = 0;
+    
+        for (; shift >= 0; shift -= 4) {
+            char c = hex_chars[(value >> shift) & 0xF];
+            if (c != '0' || started || shift == 0) {
+                *ptr++ = c;
+                started = 1;
+            }
+        }
+    
+        *ptr = '\0';
+        return str;
+    }
+    
 }

@@ -55,3 +55,21 @@ void itoa(unsigned long value, char* str, int base) {
         *ptr1++ = tmp_char;
     }
 }
+
+char* itoa_hex(uintptr_t value, char* str) {
+    static const char hex_chars[] = "0123456789ABCDEF";
+    char* ptr = str;
+    int shift = (sizeof(uintptr_t) * 8) - 4;
+    int started = 0;
+
+    for (; shift >= 0; shift -= 4) {
+        char c = hex_chars[(value >> shift) & 0xF];
+        if (c != '0' || started || shift == 0) {
+            *ptr++ = c;
+            started = 1;
+        }
+    }
+
+    *ptr = '\0';
+    return str;
+}

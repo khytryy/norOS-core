@@ -7,6 +7,8 @@
 #include "../lib/drivers/cpuvendor/vendor.h"
 #include "../lib/drivers/fb/fb.h"
 
+framebuffer_t framebuffer;
+
 void kernmain(uint32_t magic, void *addr) {
     if (magic == 0x36d76289) {
         serialWrite(KERNEL_ICON_INFO);
@@ -32,7 +34,7 @@ void kernmain(uint32_t magic, void *addr) {
     serialWrite(KERNEL_ICON_SUCCESS);
     serialWrite("job done\n");
 
-    serialWrite("norOS kernel [Version 42125]\n");
+    serialWrite("norOS kernel [Version 42325]\n");
     serialWrite("Welcome to norOS!\n");
     serialWrite("\n");
     serialWrite("Running on: ");
@@ -40,14 +42,10 @@ void kernmain(uint32_t magic, void *addr) {
     serialWrite("\n");
 
     char fbaddress[32];
-    // itoa((unsigned long)framebuffer_t.address, fbaddress, 16); /* FIX ME! */
+    itoa_hex((uintptr_t)framebuffer.address, fbaddress);
     serialWrite(KERNEL_ICON_INFO);
     serialWrite("fb :: address: 0x");
     serialWrite(fbaddress);
     serialWrite("\n");
-
-
-    putpixel(0, 0, 0xFFFFFF);
-
 
 }

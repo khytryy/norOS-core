@@ -4,7 +4,8 @@
 
 [ OK ] fb :: started up successfully
 [ SUCCESS ] job done
-norOS kernel [Version 42125]
+norOS kernel [Version 42325]
 Welcome to norOS!
 
 Running on: AuthenticAMD
+[ i ] fb :: address: 0x0

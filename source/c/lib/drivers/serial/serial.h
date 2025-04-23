@@ -14,3 +14,5 @@ void serialWriteChar(char l);
 void serialWrite(const char* string);
 
 void itoa(unsigned long value, char* str, int base);
+
+char* itoa_hex(uintptr_t value, char* str);
