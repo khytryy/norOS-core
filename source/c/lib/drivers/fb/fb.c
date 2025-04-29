@@ -1,94 +1,69 @@
 #include "fb.h"
-#include "../serial/serial.h"
-#include "../../icons.h"
 
-framebuffer_t fb_inf;
+uint32_t* framebuffer = 0;
+uint32_t fb_width = 0;
+uint32_t fb_height = 0;
+uint8_t fb_bpp = 0;
+uint32_t fb_pitch = 0;
 
-void fbInit(void* multiboot_info) {
-    struct multiboot_tag* mbtag;
+void fbInit(void* pointer) {
+    struct multiboot_tag* tag = (struct multiboot_tag*)((uint8_t*)pointer + 8);
 
-    struct multiboot_tag* tag;
-
-    for (tag = (struct multiboot_tag*)((uintptr_t)multiboot_info + 8);
-         tag->type != MULTIBOOT_TAG_TYPE_END;
-         tag = (struct multiboot_tag*)((uintptr_t)tag + ((tag->size + 7) & ~7))) {
-
+    while (tag->type != 0) {
         if (tag->type == MULTIBOOT_TAG_TYPE_FRAMEBUFFER) {
-            struct multiboot_tag_framebuffer* fb = (struct multiboot_tag_framebuffer*)tag;
+            struct multiboot_tag_framebuffer_common* fbtag =
+                (struct multiboot_tag_framebuffer_common*)tag;
 
-            fb_inf.address = fb->common.framebuffer_addr;
-            fb_inf.pitch = fb->common.framebuffer_pitch;
-            fb_inf.width = fb->common.framebuffer_width;
-            fb_inf.height = fb->common.framebuffer_height;
-            fb_inf.bpp = fb->common.framebuffer_bpp;
-            fb_inf.type = fb->common.framebuffer_type;
+            framebuffer = (uint32_t*)(uint64_t)fbtag->framebuffer_addr;
+            fb_width = fbtag->framebuffer_width;
+            fb_height = fbtag->framebuffer_height;
+            fb_bpp = fbtag->framebuffer_bpp;
+            fb_pitch = fbtag->framebuffer_pitch;
 
-            if (fb_inf.type == MULTIBOOT_FRAMEBUFFER_TYPE_RGB) {
+            // logging
+            char buff_addr[32], buff_pitch[32], buff_width[32], buff_height[32], buff_bpp[32];
+            itoa_hex((uint64_t)framebuffer, buff_addr);
+            itoa_dec(fbtag->framebuffer_pitch, buff_pitch);
+            itoa_dec(fb_width, buff_width);
+            itoa_dec(fb_height, buff_height);
+            itoa_dec(fb_bpp, buff_bpp);
 
-                fb_inf.rgb_dat.r_field_pos = fb->framebuffer_red_field_position;
-                fb_inf.rgb_dat.r_mask_size = fb->framebuffer_red_mask_size;
-                fb_inf.rgb_dat.g_field_pos = fb->framebuffer_green_field_position;
-                fb_inf.rgb_dat.g_mask_size = fb->framebuffer_green_mask_size;
-                fb_inf.rgb_dat.b_field_pos = fb->framebuffer_blue_field_position;
-                fb_inf.rgb_dat.b_mask_size = fb->framebuffer_blue_mask_size;
+            serialWrite(KERNEL_ICON_INFO);
+            serialWrite("framebuffer initialized successfully!\n");
 
-            } else if (fb_inf.type == MULTIBOOT_FRAMEBUFFER_TYPE_INDEXED) {
-
-                fb_inf.indexed.ncolors = fb->framebuffer_palette_num_colors;
-                fb_inf.indexed.palette = fb->framebuffer_palette;
-            }
-
-            break;
+            serialWrite("fb :: address: 0x"); serialWrite(buff_addr); newline();
+            serialWrite("fb :: width: "); serialWrite(buff_width); newline();
+            serialWrite("fb :: height: "); serialWrite(buff_height); newline();
+            serialWrite("fb :: pitch: "); serialWrite(buff_pitch); newline();
+            serialWrite("fb :: bpp: "); serialWrite(buff_bpp); newline();
         }
-    }
 
+        tag = (struct multiboot_tag*)((uint8_t*)tag + ((tag->size + 7) & ~7));
+    }
 }
 
-void putpixel(int x, int y, uint32_t color) {
-    if (x < 0 || y < 0 || x >= (int)fb_inf.width || y >= (int)fb_inf.height) return;
-
-    uint8_t* pixel_address = (uint8_t*)fb_inf.address + y * fb_inf.pitch + x * (fb_inf.bpp / 8);
-
-    switch (fb_inf.bpp) {
-        case 32:
-            *(uint32_t*)pixel_address = color;
-            break;
-        case 24:
-            pixel_address[0] = (color >> 0) & 0xFF;  // Blue
-            pixel_address[1] = (color >> 8) & 0xFF;  // Green
-            pixel_address[2] = (color >> 16) & 0xFF; // Red
-            break;
-        case 16: {
-            // Convert 24-bit color to 16-bit 5:6:5
-            uint16_t r = (color >> 19) & 0x1F;
-            uint16_t g = (color >> 10) & 0x3F;
-            uint16_t b = (color >> 3) & 0x1F;
-            uint16_t pixel_color = (r << 11) | (g << 5) | b;
-            *(uint16_t*)pixel_address = pixel_color;
-            break;
-        }
-        default:
-            // Unsupported format
-            serialWrite(KERNEL_ICON_FAILURE);
-            serialWrite("fb :: not supported");
-            break;
+void fbplot(struct multiboot_tag_framebuffer_common* fbtag, int x, int y, uint32_t color) {
+    if (x >= fbtag->framebuffer_width || y >= fbtag->framebuffer_height) {
+        serialWrite("Out of bounds\n");
+        return;
     }
-    char* itoa_hex(uintptr_t value, char* str) {
-        static const char hex_chars[] = "0123456789ABCDEF";
-        char* ptr = str;
-        int shift = (sizeof(uintptr_t) * 8) - 4;
-        int started = 0;
-    
-        for (; shift >= 0; shift -= 4) {
-            char c = hex_chars[(value >> shift) & 0xF];
-            if (c != '0' || started || shift == 0) {
-                *ptr++ = c;
-                started = 1;
-            }
-        }
-    
-        *ptr = '\0';
-        return str;
-    }
-    
+
+    // Calculate the offset (y * pitch + x * bpp)
+    uint32_t offset = y * fbtag->framebuffer_pitch + x * 4;
+
+    // Debug print to verify the offset and color
+    char hex_offset[9];
+    char hex_color[9];
+    itoa_hex(offset, hex_offset);  // Convert offset to hex
+    itoa_hex(color, hex_color);    // Convert color to hex
+
+    serialWrite("Plotting at offset: ");
+    serialWrite(hex_offset);
+    serialWrite(" color: ");
+    serialWrite(hex_color);
+    newline();
+
+    // Set the pixel color
+    uint32_t* pixel = (uint32_t*)((uint8_t*)fbtag->framebuffer_addr + offset);
+    *pixel = color;
 }

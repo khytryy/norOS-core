@@ -2,10 +2,15 @@
 [ i ] interrupt controller remapped
 [ *** ] starting up...
 
-[ OK ] fb :: started up successfully
+[ i ] framebuffer initialized successfully!
+fb :: address: 0xFD000000
+fb :: width: 1280
+fb :: height: 800
+fb :: pitch: 5120
+fb :: bpp: 32
 [ SUCCESS ] job done
-norOS kernel [Version 42325]
+norOS kernel [Version 42925]
 Welcome to norOS!
 
-Running on: AuthenticAMD
-[ i ] fb :: address: 0x0
+Running on: AMD QEMU Virtual CPU version 2.5+
+Plotting at offset: 53AD0000 color: 0

@@ -2,12 +2,10 @@
 #include "../lib/drivers/serial/serial.h"
 #include "../lib/io.h"
 #include "../lib/intr/pic.h"
-#include "../lib/gdt/gdt.h"
 #include "../lib/icons.h"
 #include "../lib/drivers/cpuvendor/vendor.h"
 #include "../lib/drivers/fb/fb.h"
-
-framebuffer_t framebuffer;
+#include "../lib/string.h"
 
 void kernmain(uint32_t magic, void *addr) {
     if (magic == 0x36d76289) {
@@ -24,28 +22,31 @@ void kernmain(uint32_t magic, void *addr) {
     serialWrite("interrupt controller remapped\n");
     serialWrite(KERNEL_JOB);
     serialWrite("starting up...\n");
-    serialWrite("\n");
+    newline();
     serialBegin(); // serial initialization
     fbInit(addr); // framebuffer driver initialization
-    serialWrite(KERNEL_ICON_OK);
-    serialWrite("fb :: started up successfully\n");
+
 
 
     serialWrite(KERNEL_ICON_SUCCESS);
     serialWrite("job done\n");
 
-    serialWrite("norOS kernel [Version 42325]\n");
+    serialWrite("norOS kernel [Version 42925]\n");
     serialWrite("Welcome to norOS!\n");
-    serialWrite("\n");
+    newline();
     serialWrite("Running on: ");
-    serialWrite(getmodel());
-    serialWrite("\n");
+    const char* manu = getcpumanu();
 
-    char fbaddress[32];
-    itoa_hex((uintptr_t)framebuffer.address, fbaddress);
-    serialWrite(KERNEL_ICON_INFO);
-    serialWrite("fb :: address: 0x");
-    serialWrite(fbaddress);
-    serialWrite("\n");
+    if (strcmp(manu, "AuthenticAMD") == 0) {
+        serialWrite("AMD ");
+        serialWrite(getcpumodel());
+    } else if (strcmp(manu, "GenuineIntel") == 0) {
+        serialWrite("Intel ");
+        serialWrite(getcpumodel());
+    } else {
+        serialWrite("Unknown CPU");
+    }   
+    newline();
 
+    fbplot(0, 0, 0x00FF0000);
 }

@@ -2,8 +2,9 @@
 
 #include <cpuid.h>
 #include <stdint.h>
+#include <stddef.h>
 
-static const char* getmodel(void) {
+static const char* getcpumanu(void) {
     static char vendor[13];
     uint32_t eax, ebx, ecx, edx;
 
@@ -17,4 +18,27 @@ static const char* getmodel(void) {
     vendor[12] = '\0';             // null terminate
 
     return vendor;
+}
+
+char* getcpumodel() {
+    static char cpu_name[49]; // 48 chars + null terminator
+    uint32_t eax, ebx, ecx, edx;
+    uint32_t* data = (uint32_t*) cpu_name;
+
+    // supports cpu model?
+    if (__get_cpuid_max(0x80000000, NULL) < 0x80000004) {
+        cpu_name[0] = '\0';
+        return cpu_name;
+    }
+
+    for (uint32_t i = 0; i < 3; i++) {
+        __get_cpuid(0x80000002 + i, &eax, &ebx, &ecx, &edx);
+        data[i * 4 + 0] = eax;
+        data[i * 4 + 1] = ebx;
+        data[i * 4 + 2] = ecx;
+        data[i * 4 + 3] = edx;
+    }
+
+    cpu_name[48] = '\0'; // null terminator
+    return cpu_name;
 }

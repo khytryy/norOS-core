@@ -11,8 +11,10 @@ int is_transmit_empty();
 
 void serialWriteChar(char l);
 
-void serialWrite(const char* string);
+void serialWrite(char* string);
 
-void itoa(unsigned long value, char* str, int base);
+void itoa_hex(unsigned int value, char* buffer);
 
-char* itoa_hex(uintptr_t value, char* str);
+void newline();
+
+void itoa_dec(unsigned int value, char* buffer);

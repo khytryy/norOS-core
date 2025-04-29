@@ -13,6 +13,8 @@ framebuffer_tag_start:
     dd 1093 ; width
     dd 731 ; height
     dd 32 ; depth
+efi64_tag_start:
+    
 
 framebuffer_tag_end:
     ; end tag

@@ -31,45 +31,63 @@ void serialWriteChar(char l) {
     outb(COM1, l);
 }
   
-void serialWrite(const char* string) {
+void serialWrite(char* string) {
     while (*string) {
       serialWriteChar(*string++);
     }
 }
 
-void itoa(unsigned long value, char* str, int base) {
-    char* ptr = str, *ptr1 = str, tmp_char;
-    unsigned long tmp_value;
+void itoa_hex(unsigned int value, char* buffer) {
+    const char* hex_digits = "0123456789ABCDEF";
+    int i = 0;
 
-    do {
-        tmp_value = value;
-        value /= base;
-        *ptr++ = "0123456789ABCDEF"[tmp_value - value * base];
-    } while (value);
+    // special case for 0
+    if (value == 0) {
+        buffer[i++] = '0';
+        buffer[i++] = '\0';
+        return;
+    }
 
-    *ptr-- = '\0';
+    // converter to hex in reverse
+    while (value > 0) {
+        buffer[i++] = hex_digits[value % 16];
+        value /= 16;
+    }
 
-    while (ptr1 < ptr) {
-        tmp_char = *ptr;
-        *ptr-- = *ptr1;
-        *ptr1++ = tmp_char;
+    // null terminator
+    buffer[i] = '\0';
+
+    // reverse buffer
+    for (int j = 0; j < i / 2; j++) {
+        char tmp = buffer[j];
+        buffer[j] = buffer[i - j - 1];
+        buffer[i - j - 1] = tmp;
     }
 }
 
-char* itoa_hex(uintptr_t value, char* str) {
-    static const char hex_chars[] = "0123456789ABCDEF";
-    char* ptr = str;
-    int shift = (sizeof(uintptr_t) * 8) - 4;
-    int started = 0;
+void newline() {
+    serialWrite("\n");
+}
 
-    for (; shift >= 0; shift -= 4) {
-        char c = hex_chars[(value >> shift) & 0xF];
-        if (c != '0' || started || shift == 0) {
-            *ptr++ = c;
-            started = 1;
-        }
+void itoa_dec(unsigned int value, char* buffer) {
+    int i = 0;
+    if (value == 0) {
+        buffer[i++] = '0';
+        buffer[i] = '\0';
+        return;
     }
 
-    *ptr = '\0';
-    return str;
+    while (value > 0) {
+        buffer[i++] = '0' + (value % 10);
+        value /= 10;
+    }
+
+    buffer[i] = '\0';
+
+    // Reverse
+    for (int j = 0; j < i / 2; j++) {
+        char tmp = buffer[j];
+        buffer[j] = buffer[i - j - 1];
+        buffer[i - j - 1] = tmp;
+    }
 }
