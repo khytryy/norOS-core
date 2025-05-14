@@ -1,3 +1,5 @@
-# norOS core - A x64 kernel made from scratch
+<div align="left">
+  <img width="70%" src="https://github.com/khytryy/norOS-core/blob/main/norOS.png" alt="norOS logo">
+</div>
 
-![alt text](https://github.com/khytryy/norOS-core/blob/main/norOS.png?raw=true)
+## A custom AMD64 kernel made from scratch
