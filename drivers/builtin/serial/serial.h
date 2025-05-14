@@ -2,7 +2,7 @@
 
 #define COM1 0x3f8
 
-#include "../../io.h"
+#include <io.h>
 #include <stdint.h>
 
 int serialBegin();

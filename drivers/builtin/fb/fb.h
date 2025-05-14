@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stdint.h>
-#include "../../multiboot2/mb2.h"
-#include "../serial/serial.h"
+#include <multiboot2/mb2.h>
+#include <serial/serial.h>
 #include <stddef.h>
 
 

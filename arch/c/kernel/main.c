@@ -1,6 +1,6 @@
 #include <stdint.h>
-#include "../lib/drivers/serial/serial.h"
-#include "../lib/drivers/fb/fb.h"
+#include <serial/serial.h>
+#include <fb/fb.h>
 
 void kernmain(uint32_t magic, void *addr) {
     if (magic == 0x36d76289) {
