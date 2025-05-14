@@ -2,6 +2,8 @@
     "files.associations": {
         "io.h": "c",
         "serial.h": "c",
-        "vendor.h": "c"
+        "vendor.h": "c",
+        "stddef.h": "c",
+        "stdint.h": "c"
     }
 }

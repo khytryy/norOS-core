@@ -1,51 +1,57 @@
-kernelsource := $(shell find source/c/kernel -name '*.c')
-kernelobject := $(patsubst source/c/kernel/%.c, build/c/kernel/%.o, $(kernelsource))
+# paths
+SRC_KERNEL := source/c/kernel
+SRC_LIB    := source/c/lib
+SRC_ASM    := source/asm
+BUILD_KERNEL := build/c/kernel
+BUILD_LIB    := build/c/lib
+BUILD_ASM    := build/asm
+KERNEL_BIN := bin/output/kernel.bin
 
-libheadersource := $(shell find source/c/lib -name '*.c')
-libheaderobject := $(patsubst source/c/lib/%.c, build/c/lib/%.o, $(libheadersource))
+MAKEFLAGS += -rR
 
-asmssource := $(shell find source/asm -name '*.asm')
-asmobjects := $(patsubst source/asm/%.asm, build/asm/%.o, $(asmssource))
+# tc flags
+CC      := x86_64-elf-gcc
+LD      := x86_64-elf-ld
+NASM    := nasm
+CFLAGS  := -ffreestanding -nostdlib -m64 -mcmodel=kernel -fno-pie -fno-pic -fno-pie -g -fno-stack-protector -mcmodel=large \
+           -mno-sse -mno-mmx -mno-sse2 -mno-80387 -mno-fp-ret-in-387 -Werror -I source/lib
+NASMFLAGS := -f elf64
 
-object := $(libheaderobject) $(asmobjects) $(kernelobject)
+# source files
+KERNEL_SRC := $(shell find $(SRC_KERNEL) -name '*.c')
+LIB_SRC    := $(shell find $(SRC_LIB) -name '*.c')
+ASM_SRC    := $(shell find $(SRC_ASM) -name '*.asm')
 
-$(shell mkdir -p build/c/kernel build/asm build/c/lib)
+KERNEL_OBJ := $(patsubst $(SRC_KERNEL)/%.c, $(BUILD_KERNEL)/%.o, $(KERNEL_SRC))
+LIB_OBJ    := $(patsubst $(SRC_LIB)/%.c, $(BUILD_LIB)/%.o, $(LIB_SRC))
+ASM_OBJ    := $(patsubst $(SRC_ASM)/%.asm, $(BUILD_ASM)/%.o, $(ASM_SRC))
 
-.PHONY: all
-all: checkos kernel
+OBJECTS := $(KERNEL_OBJ) $(LIB_OBJ) $(ASM_OBJ)
 
-.PHONY: checkos
-checkos:
-ifeq ($(OS),Windows_NT)
-	@echo "[ !!! ] You're currently using a Windows machine. Its recommended to spin up a Linux VM" >&2
-endif
+# build rules
+.PHONY: all kernel clean
 
-build/c/kernel/%.o: source/c/kernel/%.c
+# compiling
+$(BUILD_KERNEL)/%.o: $(SRC_KERNEL)/%.c
 	mkdir -p $(dir $@)
-	x86_64-elf-gcc -Werror -c -I source/lib -ffreestanding -nostdlib $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@
 
-build/c/lib/%.o: source/c/lib/%.c
+$(BUILD_LIB)/%.o: $(SRC_LIB)/%.c
 	mkdir -p $(dir $@)
-	x86_64-elf-gcc -c -I source/lib -ffreestanding -nostdlib $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@
 
-build/asm/%.o: source/asm/%.asm
+$(BUILD_ASM)/%.o: $(SRC_ASM)/%.asm
 	mkdir -p $(dir $@)
-	nasm -f elf64 $< -o $@
+	$(NASM) $(NASMFLAGS) $< -o $@
 
-.PHONY: kernel
-kernel: $(object)
+kernel: $(OBJECTS)
 	rm -rf serial.log
 	mkdir -p bin/x86_64 bin/output targets/x86_64/iso/boot/grub
-	x86_64-elf-ld -n -o bin/output/kernel.bin -T targets/x86_64/linker.ld $(object)
-	cp bin/output/kernel.bin targets/x86_64/iso/boot/kernel.bin
+	$(LD) -n -o $(KERNEL_BIN) -T targets/x86_64/linker.ld $(OBJECTS)
+	cp $(KERNEL_BIN) targets/x86_64/iso/boot/kernel.bin
 	grub-mkrescue -o bin/x86_64/kernel.iso targets/x86_64/iso
-	qemu-system-x86_64 -cdrom bin/x86_64/kernel.iso -serial file:serial.log
-	cat serial.log
+# to enable debugging, put this into the last line of qemu -s -S -d int
+	qemu-system-x86_64 -cdrom bin/x86_64/kernel.iso -serial mon:stdio
 
-.PHONY: clean
 clean:
-	rm -rf build/*
-	rm -rf dist/*
-	rm -rf bin/*
-	rm -rf targets/x86_64/iso/boot/kernel.bin
-	rm -f serial.log
+	rm -rf build/* bin/* dist/* serial.log targets/x86_64/iso/boot/kernel.bin

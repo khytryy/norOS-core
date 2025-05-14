@@ -1,9 +1,9 @@
-global lm_start
+global x64Start
 extern kernmain
 
 section .text
 bits 64
-lm_start:
+x64Start:
     mov cx, 0
     mov ss, cx
     mov ds, cx

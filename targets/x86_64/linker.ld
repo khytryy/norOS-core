@@ -9,17 +9,22 @@ SECTIONS {
     }
 
     /* Kernel text section */
-    .text ALIGN(4K) : { *(.text) }
+    .text ALIGN(16) : { *(.text) }
 
     /* Read-only data (constants, etc.) */
-    .rodata ALIGN(4K) : { *(.rodata) }
+    .rodata ALIGN(16) : { *(.rodata) }
 
     /* Initialized data section */
-    .data ALIGN(4K) : { *(.data) }
+    .data ALIGN(16) : { *(.data) }
 
     /* Uninitialized data (BSS) section */
     .bss ALIGN(4K) : {
         *(COMMON)
         *(.bss)
+    }
+
+    /* Stack section */
+    .stack ALIGN(16) : {
+        *(.stack)
     }
 }

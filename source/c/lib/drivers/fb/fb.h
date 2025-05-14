@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include "../../multiboot2/mb2.h"
 #include "../serial/serial.h"
-#include "../../icons.h"
 #include <stddef.h>
 
 
@@ -14,5 +13,6 @@ extern uint8_t fb_bpp;
 extern uint32_t fb_pitch;
 
 void fbInit(void* pointer);
-void fbplot(struct multiboot_tag_framebuffer_common* fbtag, int x, int y, uint32_t color);
+void fbplot(int x, int y, uint32_t color);
 void test_framebuffer_access();
+uint32_t fbread(int x, int y);

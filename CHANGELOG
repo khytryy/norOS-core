@@ -1,5 +1,3 @@
-norOS-core changelog
-
 version 41925:
     - Added multiboot2.h
     - Added 8259 PIC support
@@ -23,3 +21,5 @@ version 42225:
             if you want to plot a pixel on a framebuffer, it will triple fault. problably because of bad memory
         work in progress:
             - Framebuffer
+version 43025:
+    - Working on PCI
