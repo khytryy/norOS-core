@@ -1,5 +1,11 @@
-<div align="left">
+<div align="center">
   <img width="70%" src="https://github.com/khytryy/norOS-core/blob/main/norOS.png" alt="norOS logo">
 </div>
 
-## A custom AMD64 kernel made from scratch
+<br>
+
+<p align="center">
+  <img src="https://img.shields.io/github/languages/top/khytryy/norOS-core?logo=c&label=">
+  <img src="https://img.shields.io/github/license/malwarepad/cavOS">
+  <img src="https://app.codacy.com/project/badge/Grade/b0fd81ba8faa417fb1c2ea999d92c519">
+</p>
