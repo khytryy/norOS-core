@@ -1,3 +1,4 @@
 /bin/
 /build/
 /loader/boot/grub/iso/kernel.elf
+/.vscode/
