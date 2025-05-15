@@ -2,6 +2,7 @@
   <img width="70%" src="https://github.com/khytryy/norOS-core/blob/main/norOS.png" alt="norOS logo">
 </div>
 
+<br>
 
 <p align="center">
   <img src="https://img.shields.io/github/languages/top/khytryy/norOS-core?logo=c&label=">
