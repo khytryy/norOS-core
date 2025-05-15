@@ -2,7 +2,7 @@
 ARCH           := x86_64
 BUILD_DIR      := build
 BIN_DIR        := bin/output
-ISO_DIR        := grub/boot/grub/iso
+ISO_DIR        := loader/boot/grub/iso
 OSELF     	   := $(BIN_DIR)/kernel.elf
 ISO        	   := $(BIN_DIR)/norOS.iso
 LD_SCRIPT  	   := link/$(ARCH)/linker.ld
