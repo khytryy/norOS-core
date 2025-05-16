@@ -9,3 +9,8 @@
   <img src="https://img.shields.io/github/license/khytryy/noroS">
   <img src="https://app.codacy.com/project/badge/Grade/b0fd81ba8faa417fb1c2ea999d92c519">
 </p>
+
+## why make a whole kernel?
+> got bored of desktop development
+
+## about the kernel
