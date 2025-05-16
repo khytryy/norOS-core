@@ -19,4 +19,5 @@ norOS core is planned to be a monolithic kernel, with working IDT, GDT, Keyboard
 ## how versions of the kernel are being named
 i always use this format
 > DD/MM/YY
+
 for example: 16525
